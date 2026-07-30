@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Snake</title>
+
+    <link rel="stylesheet" href="/Web/css/styles.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div class="background-grid"></div>
+
+    <header>
+
+        <img src="snake-logo.png" class="logo">
+
+        <h1>SNAKE</h1>
+
+        <p>
+            Sobrevive el mayor tiempo posible.
+            Come, crece y rompe tu récord.
+        </p>
+
+        <div class="buttons">
+
+            <button class="play">
+                ► JUGAR
+            </button>
+
+            <button class="ranking">
+                🏆 RANKING
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <section class="stats">
+
+        <div>
+
+            <span>🍎</span>
+
+            <h2>Comida</h2>
+
+            <p>Infinita</p>
+
+        </div>
+
+        <div>
+
+            <span>⚡</span>
+
+            <h2>Velocidad</h2>
+
+            <p>Incremental</p>
+
+        </div>
+
+        <div>
+
+            <span>👑</span>
+
+            <h2>Objetivo</h2>
+
+            <p>Mayor Puntaje</p>
+
+        </div>
+
+    </section>
+
+
+    <section class="snake-animation">
+
+        <div id="snake"></div>
+
+    </section>
+
+
+    <footer>
+
+        <div class="footer-snake" aria-hidden="true">
+            <span class="snake-segment"></span>
+            <span class="snake-segment"></span>
+            <span class="snake-segment"></span>
+            <span class="snake-segment"></span>
+            <span class="snake-segment"></span>
+            <span class="snake-segment"></span>
+        </div>
+
+        <div class="footer-text">
+            Diseñado en HTML • CSS • JavaScript
+        </div>
+
+    </footer>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
