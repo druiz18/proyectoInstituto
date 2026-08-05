@@ -1,113 +1,97 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-
-<head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Snake</title>
 
-    <link rel="stylesheet" href="/Web/css/styles.css">
+    <link rel="stylesheet" href="/Web/css/styles.css" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-</head>
-
-<body>
-
+  <body>
     <div class="background-grid"></div>
 
     <header>
+      <h1>🎮 Game Hub</h1>
 
-        <img src="snake-logo.png" class="logo">
+      <p>Sobrevive el mayor tiempo posible. Come, crece y rompe tu récord.</p>
 
-        <h1>SNAKE</h1>
-
-        <p>
-            Sobrevive el mayor tiempo posible.
-            Come, crece y rompe tu récord.
-        </p>
-
-        <div class="buttons">
-
-            <button class="play">
-                ► JUGAR
-            </button>
-
-            <button class="ranking">
-                🏆 RANKING
-            </button>
-
-        </div>
-
+      <div class="buttons">
+        <button class="play">► JUGAR</button>
+        <button class="ranking">🏆 RANKING</button>
+      </div>
     </header>
 
+    <main>
+        
+      <section class="perfil">
+        <h2>Perfil del Jugador</h2>
 
-    <section class="stats">
+        <div class="card">
+          <p><strong>Jugador:</strong> Diego Ruiz</p>
+          <p><strong>Edad:</strong> 28</p>
+          <p><strong>País:</strong> Colombia</p>
+          <p><strong>Personaje:</strong> SnakeMaster</p>
+          <p><strong>Color favorito:</strong> Verde</p>
 
+          <hr />
+
+          <p><strong>Nivel:</strong> 1</p>
+          <p><strong>Vidas:</strong> 3</p>
+          <p><strong>Monedas:</strong> 100</p>
+          <p><strong>Puntos:</strong> 0</p>
+        </div>
+      </section>
+
+      <section class="stats">
         <div>
-
-            <span>🍎</span>
-
-            <h2>Comida</h2>
-
-            <p>Infinita</p>
-
+          <span>🍎</span>
+          <h2>Comida</h2>
+          <p>Infinita</p>
         </div>
 
         <div>
-
-            <span>⚡</span>
-
-            <h2>Velocidad</h2>
-
-            <p>Incremental</p>
-
+          <span>⚡</span>
+          <h2>Velocidad</h2>
+          <p>Incremental</p>
         </div>
 
         <div>
+          <span>👑</span>
 
-            <span>👑</span>
+          <h2>Objetivo</h2>
 
-            <h2>Objetivo</h2>
-
-            <p>Mayor Puntaje</p>
-
+          <p>Mayor Puntaje</p>
         </div>
+      </section>
 
-    </section>
-
-
-    <section class="snake-animation">
-
+      <section class="snake-animation">
         <div id="snake"></div>
-
-    </section>
-
+      </section>
+    </main>
 
     <footer>
+      <div class="footer-snake" aria-hidden="true">
+        <span class="snake-segment"></span>
+        <span class="snake-segment"></span>
+        <span class="snake-segment"></span>
+        <span class="snake-segment"></span>
+        <span class="snake-segment"></span>
+        <span class="snake-segment"></span>
+      </div>
 
-        <div class="footer-snake" aria-hidden="true">
-            <span class="snake-segment"></span>
-            <span class="snake-segment"></span>
-            <span class="snake-segment"></span>
-            <span class="snake-segment"></span>
-            <span class="snake-segment"></span>
-            <span class="snake-segment"></span>
-        </div>
-
-        <div class="footer-text">
-            Diseñado en HTML • CSS • JavaScript
-        </div>
-
+      <div class="footer-text">Diseñado en HTML • CSS • JavaScript</div>
     </footer>
 
-<script src="script.js"></script>
-
-</body>
-
+    <script src="script.js"></script>
+  </body>
 </html>
