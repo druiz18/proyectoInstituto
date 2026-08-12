@@ -1,97 +1,213 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego Web - Sesión Java</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #1a1a2e;
+            color: #eee;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 { color: #e94560; margin-bottom: 10px; }
+        #loginPanel, #gamePanel { text-align: center; }
+        #gamePanel { display: none; }
+        input {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover { background: #c73e54; }
+        #stats {
+            display: flex;
+            gap: 30px;
+            margin: 15px 0;
+            font-size: 18px;
+        }
+        .stat { background: #16213e; padding: 10px 20px; border-radius: 10px; }
+        .stat span { color: #e94560; font-weight: bold; }
+        canvas {
+            border: 3px solid #e94560;
+            border-radius: 10px;
+            background: #0f3460;
+        }
+        #status { margin-top: 10px; color: #aaa; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <h1>🎮 Esquivador Espacial</h1>
 
-    <title>Snake</title>
+    <!-- Login -->
+    <div id="loginPanel">
+        <input type="text" id="playerName" placeholder="Tu nombre de jugador" maxlength="15">
+        <button onclick="startGame()">Jugar</button>
+    </div>
 
-    <link rel="stylesheet" href="/Web/css/styles.css" />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-
-  <body>
-    <div class="background-grid"></div>
-
-    <header>
-      <h1>🎮 Game Hub</h1>
-
-      <p>Sobrevive el mayor tiempo posible. Come, crece y rompe tu récord.</p>
-
-      <div class="buttons">
-        <button class="play">► JUGAR</button>
-        <button class="ranking">🏆 RANKING</button>
-      </div>
-    </header>
-
-    <main>
-        
-      <section class="perfil">
-        <h2>Perfil del Jugador</h2>
-
-        <div class="card">
-          <p><strong>Jugador:</strong> Diego Ruiz</p>
-          <p><strong>Edad:</strong> 28</p>
-          <p><strong>País:</strong> Colombia</p>
-          <p><strong>Personaje:</strong> SnakeMaster</p>
-          <p><strong>Color favorito:</strong> Verde</p>
-
-          <hr />
-
-          <p><strong>Nivel:</strong> 1</p>
-          <p><strong>Vidas:</strong> 3</p>
-          <p><strong>Monedas:</strong> 100</p>
-          <p><strong>Puntos:</strong> 0</p>
+    <!-- Juego -->
+    <div id="gamePanel">
+        <div id="stats">
+            <div class="stat">👤 Jugador: <span id="sName">-</span></div>
+            <div class="stat">❤️ Vidas: <span id="sLives">-</span></div>
+            <div class="stat">⭐ Puntaje: <span id="sScore">-</span></div>
         </div>
-      </section>
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+        <div id="status">Usa ← → para moverte</div>
+    </div>
 
-      <section class="stats">
-        <div>
-          <span>🍎</span>
-          <h2>Comida</h2>
-          <p>Infinita</p>
-        </div>
+    <script>
+        const API = 'http://localhost:8080';
+        let sessionId = null;
+        let playerName = '';
+        let lives = 3;
+        let score = 0;
+        let gameRunning = false;
 
-        <div>
-          <span>⚡</span>
-          <h2>Velocidad</h2>
-          <p>Incremental</p>
-        </div>
+        // Canvas setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-        <div>
-          <span>👑</span>
+        // Estado del juego
+        let player = { x: 180, y: 540, w: 40, h: 40, speed: 5 };
+        let obstacles = [];
+        let frameCount = 0;
+        let keys = {};
 
-          <h2>Objetivo</h2>
+        async function startGame() {
+            playerName = document.getElementById('playerName').value || 'Anónimo';
+            
+            // Crear sesión en Java
+            const res = await fetch(`${API}/api/session/create`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ playerName })
+            });
+            const data = await res.json();
+            sessionId = data.id;
+            lives = data.lives;
+            score = data.score;
 
-          <p>Mayor Puntaje</p>
-        </div>
-      </section>
+            // UI
+            document.getElementById('loginPanel').style.display = 'none';
+            document.getElementById('gamePanel').style.display = 'block';
+            updateStats();
+            
+            gameRunning = true;
+            requestAnimationFrame(gameLoop);
+        }
 
-      <section class="snake-animation">
-        <div id="snake"></div>
-      </section>
-    </main>
+        function updateStats() {
+            document.getElementById('sName').textContent = playerName;
+            document.getElementById('sLives').textContent = lives;
+            document.getElementById('sScore').textContent = score;
+        }
 
-    <footer>
-      <div class="footer-snake" aria-hidden="true">
-        <span class="snake-segment"></span>
-        <span class="snake-segment"></span>
-        <span class="snake-segment"></span>
-        <span class="snake-segment"></span>
-        <span class="snake-segment"></span>
-        <span class="snake-segment"></span>
-      </div>
+        // Input
+        window.addEventListener('keydown', e => keys[e.key] = true);
+        window.addEventListener('keyup', e => keys[e.key] = false);
 
-      <div class="footer-text">Diseñado en HTML • CSS • JavaScript</div>
-    </footer>
+        async function syncWithJava() {
+            // Enviar estado actual a Java
+            await fetch(`${API}/api/update`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId, lives, score })
+            });
+        }
 
-    <script src="script.js"></script>
-  </body>
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            ctx.fillStyle = '#0f3460';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Mover jugador
+            if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
+            if (keys['ArrowRight'] && player.x < canvas.width - player.w) player.x += player.speed;
+
+            // Dibujar jugador
+            ctx.fillStyle = '#e94560';
+            ctx.fillRect(player.x, player.y, player.w, player.h);
+
+            // Generar obstáculos
+            frameCount++;
+            if (frameCount % 60 === 0) {
+                obstacles.push({
+                    x: Math.random() * (canvas.width - 30),
+                    y: -30,
+                    w: 30,
+                    h: 30,
+                    speed: 3 + Math.random() * 2
+                });
+            }
+
+            // Mover y dibujar obstáculos
+            ctx.fillStyle = '#f39c12';
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                let obs = obstacles[i];
+                obs.y += obs.speed;
+                ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+
+                // Colisión
+                if (player.x < obs.x + obs.w &&
+                    player.x + player.w > obs.x &&
+                    player.y < obs.y + obs.h &&
+                    player.y + player.h > obs.y) {
+                    
+                    lives--;
+                    obstacles.splice(i, 1);
+                    updateStats();
+                    syncWithJava(); // Sincronizar con Java
+
+                    if (lives <= 0) {
+                        gameOver();
+                        return;
+                    }
+                    continue;
+                }
+
+                // Puntaje por esquivar
+                if (obs.y > canvas.height) {
+                    score += 10;
+                    obstacles.splice(i, 1);
+                    updateStats();
+                    if (score % 50 === 0) syncWithJava(); // Sincronizar cada 50 pts
+                }
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            syncWithJava();
+            ctx.fillStyle = 'rgba(0,0,0,0.7)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#e94560';
+            ctx.font = '30px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('💀 GAME OVER', canvas.width/2, canvas.height/2);
+            ctx.fillStyle = '#fff';
+            ctx.font = '18px Arial';
+            ctx.fillText(`Puntaje final: ${score}`, canvas.width/2, canvas.height/2 + 40);
+            document.getElementById('status').textContent = 'Recarga la página para jugar de nuevo';
+        }
+    </script>
+</body>
 </html>
