@@ -33,10 +33,6 @@ public class Main {
         System.out.print("Nombre del personaje: ");
         String personaje = scanner.nextLine();
 
-        // Solicitar el color favorito
-        System.out.print("Color favorito: ");
-        String color = scanner.nextLine();
-
         // Variables iniciales del juego
         int nivel = 1;
         int vidas = 3;
@@ -50,7 +46,6 @@ public class Main {
         System.out.println("Edad: " + edad);
         System.out.println("País: " + pais);
         System.out.println("Personaje: " + personaje);
-        System.out.println("Color favorito: " + color);
         System.out.println("Nivel: " + nivel);
         System.out.println("Vidas: " + vidas);
         System.out.println("Monedas: " + monedas);
