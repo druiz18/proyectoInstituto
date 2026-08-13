@@ -1,213 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juego Web - Sesión Java</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #1a1a2e;
-            color: #eee;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        h1 { color: #e94560; margin-bottom: 10px; }
-        #loginPanel, #gamePanel { text-align: center; }
-        #gamePanel { display: none; }
-        input {
-            padding: 10px 15px;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            margin-right: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #e94560;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        button:hover { background: #c73e54; }
-        #stats {
-            display: flex;
-            gap: 30px;
-            margin: 15px 0;
-            font-size: 18px;
-        }
-        .stat { background: #16213e; padding: 10px 20px; border-radius: 10px; }
-        .stat span { color: #e94560; font-weight: bold; }
-        canvas {
-            border: 3px solid #e94560;
-            border-radius: 10px;
-            background: #0f3460;
-        }
-        #status { margin-top: 10px; color: #aaa; font-size: 14px; }
-    </style>
-</head>
-<body>
-    <h1>🎮 Esquivador Espacial</h1>
+  <head>
+    <meta charset="UTF-8" />
 
-    <!-- Login -->
-    <div id="loginPanel">
-        <input type="text" id="playerName" placeholder="Tu nombre de jugador" maxlength="15">
-        <button onclick="startGame()">Jugar</button>
-    </div>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Juego -->
-    <div id="gamePanel">
-        <div id="stats">
-            <div class="stat">👤 Jugador: <span id="sName">-</span></div>
-            <div class="stat">❤️ Vidas: <span id="sLives">-</span></div>
-            <div class="stat">⭐ Puntaje: <span id="sScore">-</span></div>
-        </div>
-        <canvas id="gameCanvas" width="400" height="600"></canvas>
-        <div id="status">Usa ← → para moverte</div>
-    </div>
+    <title>Formulario de registro</title>
 
-    <script>
-        const API = 'http://localhost:8080';
-        let sessionId = null;
-        let playerName = '';
-        let lives = 3;
-        let score = 0;
-        let gameRunning = false;
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
 
-        // Canvas setup
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+  <body>
+    <main class="contenedor">
+      <section class="formulario-contenedor">
+        <h1>Crear cuenta</h1>
 
-        // Estado del juego
-        let player = { x: 180, y: 540, w: 40, h: 40, speed: 5 };
-        let obstacles = [];
-        let frameCount = 0;
-        let keys = {};
+        <p class="descripcion">Completa el formulario para registrarte.</p>
 
-        async function startGame() {
-            playerName = document.getElementById('playerName').value || 'Anónimo';
-            
-            // Crear sesión en Java
-            const res = await fetch(`${API}/api/session/create`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerName })
-            });
-            const data = await res.json();
-            sessionId = data.id;
-            lives = data.lives;
-            score = data.score;
+        <form id="formulario">
+          <!-- Nombre -->
 
-            // UI
-            document.getElementById('loginPanel').style.display = 'none';
-            document.getElementById('gamePanel').style.display = 'block';
-            updateStats();
-            
-            gameRunning = true;
-            requestAnimationFrame(gameLoop);
-        }
+          <div class="campo">
+            <label for="nombre"> Nombre completo </label>
 
-        function updateStats() {
-            document.getElementById('sName').textContent = playerName;
-            document.getElementById('sLives').textContent = lives;
-            document.getElementById('sScore').textContent = score;
-        }
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              placeholder="Ej: Joe Doe"
+            />
 
-        // Input
-        window.addEventListener('keydown', e => keys[e.key] = true);
-        window.addEventListener('keyup', e => keys[e.key] = false);
+            <small id="errorNombre" class="mensaje-error"></small>
+          </div>
 
-        async function syncWithJava() {
-            // Enviar estado actual a Java
-            await fetch(`${API}/api/update`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sessionId, lives, score })
-            });
-        }
+          <!-- Correo -->
 
-        function gameLoop() {
-            if (!gameRunning) return;
+          <div class="campo">
+            <label for="correo"> Correo electrónico </label>
 
-            ctx.fillStyle = '#0f3460';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            <input
+              type="email"
+              id="correo"
+              name="correo"
+              placeholder="Ej: correo@email.com"
+            />
 
-            // Mover jugador
-            if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
-            if (keys['ArrowRight'] && player.x < canvas.width - player.w) player.x += player.speed;
+            <small id="errorCorreo" class="mensaje-error"></small>
+          </div>
 
-            // Dibujar jugador
-            ctx.fillStyle = '#e94560';
-            ctx.fillRect(player.x, player.y, player.w, player.h);
+          <!-- Edad -->
 
-            // Generar obstáculos
-            frameCount++;
-            if (frameCount % 60 === 0) {
-                obstacles.push({
-                    x: Math.random() * (canvas.width - 30),
-                    y: -30,
-                    w: 30,
-                    h: 30,
-                    speed: 3 + Math.random() * 2
-                });
-            }
+          <div class="campo">
+            <label for="edad"> Edad </label>
 
-            // Mover y dibujar obstáculos
-            ctx.fillStyle = '#f39c12';
-            for (let i = obstacles.length - 1; i >= 0; i--) {
-                let obs = obstacles[i];
-                obs.y += obs.speed;
-                ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+            <input type="number" id="edad" name="edad" placeholder="Ej: 25" />
 
-                // Colisión
-                if (player.x < obs.x + obs.w &&
-                    player.x + player.w > obs.x &&
-                    player.y < obs.y + obs.h &&
-                    player.y + player.h > obs.y) {
-                    
-                    lives--;
-                    obstacles.splice(i, 1);
-                    updateStats();
-                    syncWithJava(); // Sincronizar con Java
+            <small id="errorEdad" class="mensaje-error"></small>
+          </div>
 
-                    if (lives <= 0) {
-                        gameOver();
-                        return;
-                    }
-                    continue;
-                }
+          <!-- Contraseña -->
 
-                // Puntaje por esquivar
-                if (obs.y > canvas.height) {
-                    score += 10;
-                    obstacles.splice(i, 1);
-                    updateStats();
-                    if (score % 50 === 0) syncWithJava(); // Sincronizar cada 50 pts
-                }
-            }
+          <div class="campo">
+            <label for="password"> Contraseña </label>
 
-            requestAnimationFrame(gameLoop);
-        }
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Mínimo 8 caracteres"
+            />
 
-        function gameOver() {
-            gameRunning = false;
-            syncWithJava();
-            ctx.fillStyle = 'rgba(0,0,0,0.7)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#e94560';
-            ctx.font = '30px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('💀 GAME OVER', canvas.width/2, canvas.height/2);
-            ctx.fillStyle = '#fff';
-            ctx.font = '18px Arial';
-            ctx.fillText(`Puntaje final: ${score}`, canvas.width/2, canvas.height/2 + 40);
-            document.getElementById('status').textContent = 'Recarga la página para jugar de nuevo';
-        }
-    </script>
-</body>
+            <small id="errorPassword" class="mensaje-error"></small>
+          </div>
+
+          <!-- Confirmar contraseña -->
+
+          <div class="campo">
+            <label for="confirmarPassword"> Confirmar contraseña </label>
+
+            <input
+              type="password"
+              id="confirmarPassword"
+              name="confirmarPassword"
+              placeholder="Repita su contraseña"
+            />
+
+            <small id="errorConfirmarPassword" class="mensaje-error"></small>
+          </div>
+
+          <!-- Términos -->
+
+          <div class="campo-checkbox">
+            <input type="checkbox" id="terminos" name="terminos" />
+
+            <label for="terminos"> Acepto los términos y condiciones </label>
+          </div>
+
+          <small id="errorTerminos" class="mensaje-error"></small>
+
+          <!-- Botón -->
+
+          <button type="submit" class="boton">Registrarse</button>
+
+          <!-- Mensaje general -->
+
+          <p id="mensajeFormulario" class="mensaje-formulario"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="js/script.js"></script>
+  </body>
 </html>
