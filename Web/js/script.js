@@ -3,6 +3,7 @@
 const formulario = document.querySelector("#formulario");
 
 const nombre = document.querySelector("#nombre");
+const minlength = nombre.getAttribute("minlength");
 
 const correo = document.querySelector("#correo");
 
@@ -63,11 +64,11 @@ function validarNombre() {
     return false;
   }
 
-  if (valor.length < 3) {
+  if (valor.length < minlength) {
     marcarInvalido(
       nombre,
       errorNombre,
-      "El nombre debe tener mínimo 3 caracteres.",
+      `El nombre debe tener mínimo ${minlength} caracteres.`,
     );
 
     return false;
